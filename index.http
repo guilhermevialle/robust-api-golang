@@ -1,0 +1,9 @@
+POST http://localhost:8080/customer/register
+
+{
+  "name": "Guilherme Vialle",
+  "email": "guivialle2@gmail.com"
+}
+
+###
+
