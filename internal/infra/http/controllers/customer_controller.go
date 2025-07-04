@@ -9,7 +9,7 @@ import (
 
 type ICustomerController interface {
 	CreateCustomer(ctx *gin.Context)
-	DeleteCustomer(ctx *gin.Context)
+	GetProfile(ctx *gin.Context)
 }
 
 type CustomerController struct {
@@ -28,11 +28,11 @@ func (uc *CustomerController) CreateCustomer(ctx *gin.Context) {
 	var body dtos.CreateCustomerDto
 
 	if err := ctx.BindJSON(&body); err != nil {
-		ctx.JSON(400, gin.H{"BAD_REQUEST": "Invalid input"})
+		ctx.JSON(400, gin.H{"BAD_REQUEST": "Invalid input fields"})
 		return
 	}
 
-	customer, err := uc.customerService.CreateCustomer(body.Name, body.Email)
+	customer, err := uc.customerService.CreateCustomer(body.Name, body.Email, body.Password)
 
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
@@ -42,13 +42,14 @@ func (uc *CustomerController) CreateCustomer(ctx *gin.Context) {
 	ctx.JSON(201, customer)
 }
 
-func (uc *CustomerController) DeleteCustomer(ctx *gin.Context) {
+func (uc *CustomerController) GetProfile(ctx *gin.Context) {
 	id := ctx.Param("id")
 
-	if err := uc.customerService.DeleteCustomer(id); err != nil {
+	customer, err := uc.customerService.GetProfileByID(id)
+	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.Status(204)
+	ctx.JSON(200, customer)
 }

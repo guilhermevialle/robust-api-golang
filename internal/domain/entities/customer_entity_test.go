@@ -5,33 +5,31 @@ import (
 	"testing"
 )
 
-func TestCustomer(t *testing.T) {
-	t.Run("should create a new valid customer", func(t *testing.T) {
-		if _, err := entities.NewCustomer("John Doe", "j@j.com"); err != nil {
-			t.Error(err)
-		}
-	})
+func TestNewCustomer(t *testing.T) {
+	t.Run("should create a valid customer", func(t *testing.T) {
+		name := "John Doe"
+		email := "john@example.com"
+		password := "securepassword123"
 
-	t.Run("should not create a new invalid customer", func(t *testing.T) {
-		if _, err := entities.NewCustomer("", "j@j.com"); err == nil {
-			t.Error("expected error")
-		}
-
-		if _, err := entities.NewCustomer("John Doe", ""); err == nil {
-			t.Error("expected error")
+		customer, err := entities.NewCustomer(name, email, password)
+		if err != nil {
+			t.Fatalf("expected no error, got: %v", err)
 		}
 
-		if _, err := entities.NewCustomer("2ewqds313", "j"); err == nil {
-			t.Error("expected error")
+		if customer.ID == "" {
+			t.Error("expected generated ID, got empty string")
 		}
 
-		if _, err := entities.NewCustomer("2", "j@j."); err == nil {
-			t.Error("expected error")
+		if customer.Name != name {
+			t.Errorf("expected name %s, got %s", name, customer.Name)
 		}
 
-		if _, err := entities.NewCustomer("John Doe", "j@j"); err == nil {
-			t.Error("expected error")
+		if customer.Email != email {
+			t.Errorf("expected email %s, got %s", email, customer.Email)
 		}
 
+		if customer.Password != password {
+			t.Errorf("expected password to be set correctly")
+		}
 	})
 }

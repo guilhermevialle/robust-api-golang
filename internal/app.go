@@ -16,6 +16,7 @@ func NewApp() *gin.Engine {
 	})
 
 	routes.CustomerRoutes(r.Group("/"), c.CustomerController)
+	routes.AuthRoutes(r.Group("/"), c.AuthController)
 
 	return r
 }

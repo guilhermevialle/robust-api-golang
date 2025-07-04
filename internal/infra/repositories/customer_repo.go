@@ -3,23 +3,25 @@ package repositories
 import "api/internal/domain/entities"
 
 type CustomerRepo struct {
-	storage []*entities.Customer
+	customers []*entities.Customer
+	profiles  []*entities.Profile
 }
 
 var _ ICustomerRepo = (*CustomerRepo)(nil)
 
 func NewCustomerRepo() *CustomerRepo {
 	return &CustomerRepo{
-		storage: make([]*entities.Customer, 0),
+		customers: make([]*entities.Customer, 0),
+		profiles:  make([]*entities.Profile, 0),
 	}
 }
 
 func (r *CustomerRepo) Save(customer *entities.Customer) {
-	r.storage = append(r.storage, customer)
+	r.customers = append(r.customers, customer)
 }
 
 func (r *CustomerRepo) GetByID(id string) *entities.Customer {
-	for _, customer := range r.storage {
+	for _, customer := range r.customers {
 		if customer.ID == id {
 			return customer
 		}
@@ -29,7 +31,7 @@ func (r *CustomerRepo) GetByID(id string) *entities.Customer {
 }
 
 func (r *CustomerRepo) GetByEmail(email string) *entities.Customer {
-	for _, customer := range r.storage {
+	for _, customer := range r.customers {
 		if customer.Email == email {
 			return customer
 		}
@@ -39,9 +41,9 @@ func (r *CustomerRepo) GetByEmail(email string) *entities.Customer {
 }
 
 func (r *CustomerRepo) Delete(id string) {
-	for i, customer := range r.storage {
+	for i, customer := range r.customers {
 		if customer.ID == id {
-			r.storage = append(r.storage[:i], r.storage[i+1:]...)
+			r.customers = append(r.customers[:i], r.customers[i+1:]...)
 		}
 	}
 }

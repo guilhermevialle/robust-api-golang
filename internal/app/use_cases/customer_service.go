@@ -7,9 +7,9 @@ import (
 )
 
 type ICustomerService interface {
-	CreateCustomer(name, email string) (*entities.Customer, error)
-	DeleteCustomer(id string) error
+	CreateCustomer(name, email, password string) (*entities.Customer, error)
 	GetCustomerByEmail(email string) (*entities.Customer, error)
+	GetProfileByID(id string) (*entities.Profile, error)
 }
 
 type CustomerService struct {
@@ -24,29 +24,19 @@ func NewCustomerService(customerRepo repositories.ICustomerRepo) *CustomerServic
 	}
 }
 
-func (cs *CustomerService) CreateCustomer(name, email string) (*entities.Customer, error) {
+func (cs *CustomerService) CreateCustomer(name, email, password string) (*entities.Customer, error) {
 	if cs.customerRepo.GetByEmail(email) != nil {
-		return nil, errors.New("customer with email already exists")
+		return nil, errors.New("email already in use")
 	}
 
-	customer, err := entities.NewCustomer(name, email)
+	customer, err := entities.NewCustomer(name, email, password)
 	if err != nil {
-		return nil, errors.New("Bad request")
+		return nil, errors.New("bad request")
 	}
 
 	cs.customerRepo.Save(customer)
 
 	return customer, nil
-}
-
-func (cs *CustomerService) DeleteCustomer(id string) error {
-	if cs.customerRepo.GetByID(id) == nil {
-		return errors.New("customer not found")
-	}
-
-	cs.customerRepo.Delete(id)
-
-	return nil
 }
 
 func (cs *CustomerService) GetCustomerByEmail(email string) (*entities.Customer, error) {
@@ -56,4 +46,14 @@ func (cs *CustomerService) GetCustomerByEmail(email string) (*entities.Customer,
 	}
 
 	return customer, nil
+}
+
+func (cs *CustomerService) GetProfileByID(id string) (*entities.Profile, error) {
+	customer := cs.customerRepo.GetByID(id)
+
+	if customer == nil {
+		return nil, errors.New("customer not found")
+	}
+
+	return customer.Profile, nil
 }

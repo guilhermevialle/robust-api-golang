@@ -1,7 +1,6 @@
 package dtos
 
-type CreateCustomerDto struct {
-	Name     string `json:"name"`
+type LoginDto struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }

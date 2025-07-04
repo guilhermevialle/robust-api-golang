@@ -1,25 +1,26 @@
 package di
 
 import (
+	app_services "api/internal/app/services"
 	"api/internal/app/use_cases"
-	controllers "api/internal/infra/http/controllers/customer_controller"
+	"api/internal/infra/http/controllers"
 	"api/internal/infra/repositories"
+	infra_services "api/internal/infra/services"
 )
 
 type Container struct {
 	CustomerController controllers.ICustomerController
+	AuthController     controllers.IAuthController
 }
 
 func NewContainer() *Container {
-	return &Container{
-		CustomerController: setupCustomerDI(),
-	}
-}
-
-func setupCustomerDI() controllers.ICustomerController {
 	customerRepo := repositories.NewCustomerRepo()
+	tokenService := infra_services.NewTokenService()
 	customerService := use_cases.NewCustomerService(customerRepo)
-	customerController := controllers.NewCustomerController(customerService)
+	authService := app_services.NewAuthService(customerService, tokenService)
 
-	return customerController
+	return &Container{
+		CustomerController: controllers.NewCustomerController(customerService),
+		AuthController:     controllers.NewAuthController(authService),
+	}
 }

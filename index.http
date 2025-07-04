@@ -1,9 +1,28 @@
+
+// Register
 POST http://localhost:8080/customer/register
+Content-Type: application/json
 
 {
   "name": "Guilherme Vialle",
-  "email": "guivialle2@gmail.com"
+  "email": "guivialle@gmail.com",
+  "password": "123"
 }
 
 ###
+
+// Login
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "email": "guivialle@gmail.com",
+  "password": "123"
+}
+
+###
+
+// Profile data
+GET http://localhost:8080/me/cDzkoCBfCb4OuDVnMzcny
+
 

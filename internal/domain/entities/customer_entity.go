@@ -1,45 +1,50 @@
 package entities
 
 import (
-	"regexp"
-
-	"github.com/go-playground/validator/v10"
 	gonanoid "github.com/matoous/go-nanoid/v2"
 )
 
 type Customer struct {
-	ID    string `json:"id" validate:"required"`
-	Name  string `json:"name" validate:"required,min=3,max=80,nameregex"`
-	Email string `json:"email" validate:"required,email"`
+	ID       string   `json:"id"`
+	Name     string   `json:"name"`
+	Email    string   `json:"email"`
+	Password string   `json:"-"`
+	Profile  *Profile `json:"profile"`
 }
 
-var validate *validator.Validate
-
-func init() {
-	validate = validator.New()
-
-	validate.RegisterValidation("nameregex", func(fl validator.FieldLevel) bool {
-		name := fl.Field().String()
-		regex := regexp.MustCompile(`^[A-Za-zÀ-ÿ\s]+$`)
-		return regex.MatchString(name)
-	})
-}
-
-func NewCustomer(name, email string) (*Customer, error) {
+func NewCustomer(name, email, password string) (*Customer, error) {
 	id, err := gonanoid.New(21)
 	if err != nil {
 		return nil, err
 	}
 
 	customer := &Customer{
-		ID:    id,
-		Name:  name,
-		Email: email,
+		ID:       id,
+		Name:     name,
+		Email:    email,
+		Password: password,
 	}
 
-	if err := validate.Struct(customer); err != nil {
+	p, err := customer.createProfile()
+	if err != nil {
 		return nil, err
 	}
 
+	customer.Profile = p
+
 	return customer, nil
+}
+
+func (c *Customer) createProfile() (*Profile, error) {
+	id, err := gonanoid.New(21)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Profile{
+		ID:         id,
+		CustomerID: c.ID,
+		Name:       c.Name,
+		Summary:    "",
+	}, nil
 }
